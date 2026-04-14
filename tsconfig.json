@@ -11,6 +11,7 @@
       ]
     },
     "resolveJsonModule": true,
+    "types": ["node", "vitest/globals"],
     "strict": true,
     "strictNullChecks": true,
     "declaration": true,

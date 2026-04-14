@@ -3,7 +3,8 @@ import ApiSnapshot from 'tsnapi/rolldown'
 
 export default defineConfig({
   entry: [
-    'src/index.ts'
+    'src/index.ts',
+    'src/vite/index.ts'
   ],
   dts: true,
   exports: true,
@@ -11,7 +12,6 @@ export default defineConfig({
   plugins: [
     ApiSnapshot({
       // TODO: remove this when the library is stable to guard against breaking changes
-      // eslint-disable-next-line node/prefer-global/process
       update: !process.env.CI
     })
   ]
