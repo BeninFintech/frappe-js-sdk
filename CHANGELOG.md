@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.2...v2.0.0
+
+[compare changes](https://github.com/beninfintech/frappe-js-sdk/compare/v2.0.2...v2.0.0)
+
+### Fixes
+
+- Update copyright year in LICENSE file ([1c561ef](https://undefined/beninfintech/frappe-js-sdk/commit/1c561ef))
+
 ## v2.0.0
 
 > Forked from [The-Commit-Company/frappe-js-sdk](https://github.com/The-Commit-Company/frappe-js-sdk) v1.10.0 and rebuilt as `@beninfintech/frappe`.
