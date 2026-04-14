@@ -1,48 +1,48 @@
-import { AxiosInstance } from 'axios';
+import { type AxiosInstance } from 'axios'
 
-import { Error } from '../frappe_app/types';
-import { AuthCredentials, AuthResponse, OTPCredentials, UserPassCredentials } from './types';
+import { type Error } from '~/app/types'
+
+import { type AuthCredentials, type AuthResponse, type OTPCredentials, type UserPassCredentials } from './types'
 
 export class FrappeAuth {
   /** URL of the Frappe App instance */
-  private readonly appURL: string;
+  private readonly appURL: string
 
   /** Axios instance */
-  readonly axios: AxiosInstance;
+  readonly axios: AxiosInstance
 
   /** Whether to use the token based auth */
-  readonly useToken: boolean;
+  readonly useToken: boolean
 
   /** Token to be used for authentication */
-  readonly token?: () => string;
+  readonly token?: () => string
 
   /** Type of token to be used for authentication */
-  readonly tokenType?: 'Bearer' | 'token';
+  readonly tokenType?: 'Bearer' | 'token'
 
   constructor(
     appURL: string,
     axios: AxiosInstance,
     useToken?: boolean,
     token?: () => string,
-    tokenType?: 'Bearer' | 'token',
+    tokenType?: 'Bearer' | 'token'
   ) {
-    this.appURL = appURL;
-    this.axios = axios;
-    this.useToken = useToken ?? false;
-    this.token = token;
-    this.tokenType = tokenType;
+    this.appURL = appURL
+    this.axios = axios
+    this.useToken = useToken ?? false
+    this.token = token
+    this.tokenType = tokenType
   }
 
   /** Logs in the user using username and password */
   async loginWithUsernamePassword(credentials: AuthCredentials): Promise<AuthResponse> {
-
     return this.axios
       .post('/api/method/login', {
         usr: (credentials as UserPassCredentials).username,
         pwd: (credentials as UserPassCredentials).password,
         otp: (credentials as OTPCredentials).otp,
         tmp_id: (credentials as OTPCredentials).tmp_id,
-        device: credentials.device,
+        device: credentials.device
       })
       .then((res) => res.data as AuthResponse)
       .catch((error) => {
@@ -51,9 +51,9 @@ export class FrappeAuth {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: error.response.data.message ?? 'There was an error while logging in',
-          exception: error.response.data.exception ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? ''
+        } as Error
+      })
   }
 
   /** Gets the currently logged in user */
@@ -67,9 +67,9 @@ export class FrappeAuth {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: 'There was an error while fetching the logged in user',
-          exception: error.response.data.exception ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? ''
+        } as Error
+      })
   }
 
   /** Logs the user out */
@@ -77,7 +77,7 @@ export class FrappeAuth {
     return this.axios
       .post('/api/method/logout', {})
       .then(() => {
-        return;
+
       })
       .catch((error) => {
         throw {
@@ -85,9 +85,9 @@ export class FrappeAuth {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: error.response.data.message ?? 'There was an error while logging out',
-          exception: error.response.data.exception ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? ''
+        } as Error
+      })
   }
 
   /** Sends password reset email */
@@ -95,10 +95,10 @@ export class FrappeAuth {
     return this.axios
       .post('/', {
         cmd: 'frappe.core.doctype.user.user.reset_password',
-        user,
+        user
       })
       .then(() => {
-        return;
+
       })
       .catch((error) => {
         throw {
@@ -106,8 +106,8 @@ export class FrappeAuth {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: error.response.data.message ?? 'There was an error sending password reset email.',
-          exception: error.response.data.exception ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? ''
+        } as Error
+      })
   }
 }

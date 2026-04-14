@@ -1,16 +1,16 @@
 export interface FileArgs<T> {
   /** If the file access is private then set to TRUE */
-  isPrivate?: boolean;
+  isPrivate?: boolean
   /** Folder the file exists in */
-  folder?: string;
+  folder?: string
   /** File URL */
-  file_url?: string;
+  file_url?: string
   /** Doctype associated with the file */
-  doctype?: string;
+  doctype?: string
   /** Docname associated with the file */
-  docname?: string;
+  docname?: string
   /** Field to be linked in the Document */
-  fieldname?: string;
+  fieldname?: string
   /** Additional data to be sent along with the file */
-  otherData?: T;
+  otherData?: T
 }

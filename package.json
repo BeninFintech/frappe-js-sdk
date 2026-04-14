@@ -1,43 +1,60 @@
 {
-  "name": "frappe-js-sdk",
+  "name": "@beninfintech/frappe",
+  "type": "module",
   "version": "1.12.0",
+  "packageManager": "pnpm@10.33.0",
   "description": "TypeScript/JavaScript client for Frappe Framework REST API",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint",
-    "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags",
-    "build": "tsc",
-    "test": "echo \"Error: no test specified\"",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json"
-  },
+  "author": "Wilfried K. AGO <wilfried.ago@bftgroup.co>",
+  "license": "MIT",
+  "homepage": "https://github.com/beninfintech/frappe-js-sdk#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/The-Commit-Company/frappe-js-sdk.git"
+    "url": "git+https://github.com/beninfintech/frappe-js-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/beninfintech/frappe-js-sdk/issues"
   },
   "keywords": [
     "Frappe"
   ],
-  "author": "Nikhil Kothari",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/The-Commit-Company/frappe-js-sdk/issues"
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
   },
-  "homepage": "https://github.com/The-Commit-Company/frappe-js-sdk#readme",
-  "devDependencies": {
-    "prettier": "^3.2.5",
-    "tslint": "^6.1.3",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "^5.3.3"
-  },
+  "types": "./dist/index.d.mts",
   "files": [
-    "lib/**/*"
+    "dist"
   ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsdown",
+    "test": "vitest",
+    "typecheck": "tsc",
+    "prepare": "pnpm run build",
+    "preversion": "pnpm run lint",
+    "version": "pnpm run format && git add -A src",
+    "postversion": "git push && git push --tags",
+    "prepublishOnly": "nr build",
+    "release": "bumpp",
+    "start": "tsx src/index.ts",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
+  },
   "dependencies": {
-    "axios": "^1.12.2"
+    "axios": "^1.15.0"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^8.2.0",
+    "@types/node": "^25.6.0",
+    "eslint": "^10.2.0",
+    "eslint-plugin-format": "^2.0.1",
+    "jiti": "^2.6.1",
+    "publint": "^0.3.18",
+    "tsdown": "^0.21.8",
+    "tsnapi": "^0.1.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.4"
   }
 }

@@ -1,36 +1,37 @@
-import { AxiosInstance } from 'axios';
+import { type AxiosInstance } from 'axios'
 
-import { Error } from '../frappe_app/types';
-import { FieldName, Filter, FrappeDoc, GetDocListArgs, GetLastDocArgs } from './types';
+import { type Error } from '~/app/types'
+
+import { type FieldName, type Filter, type FrappeDoc, type GetDocListArgs, type GetLastDocArgs } from './types'
 
 export class FrappeDB {
   /** URL of the Frappe App instance */
-  private readonly appURL: string;
+  private readonly appURL: string
 
   /** Axios instance */
-  readonly axios: AxiosInstance;
+  readonly axios: AxiosInstance
 
   /** Whether to use the token based auth */
-  readonly useToken: boolean;
+  readonly useToken: boolean
 
   /** Token to be used for authentication */
-  readonly token?: () => string;
+  readonly token?: () => string
 
   /** Type of token to be used for authentication */
-  readonly tokenType?: 'Bearer' | 'token';
+  readonly tokenType?: 'Bearer' | 'token'
 
   constructor(
     appURL: string,
     axios: AxiosInstance,
     useToken?: boolean,
     token?: () => string,
-    tokenType?: 'Bearer' | 'token',
+    tokenType?: 'Bearer' | 'token'
   ) {
-    this.appURL = appURL;
-    this.axios = axios;
-    this.useToken = useToken ?? false;
-    this.token = token;
-    this.tokenType = tokenType;
+    this.appURL = appURL
+    this.axios = axios
+    this.useToken = useToken ?? false
+    this.token = token
+    this.tokenType = tokenType
   }
 
   /**
@@ -49,9 +50,9 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: 'There was an error while fetching the document.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        } as Error
+      })
   }
 
   /**
@@ -61,11 +62,11 @@ export class FrappeDB {
    * @returns Promise which resolves to an array of documents
    */
   async getDocList<T = any, K = FrappeDoc<T>>(doctype: string, args?: GetDocListArgs<K>) {
-    let params = {};
+    let params = {}
 
     if (args) {
-      const { fields, filters, orFilters, orderBy, limit, limit_start, groupBy, asDict = true } = args;
-      const orderByString = orderBy ? `${String(orderBy?.field)} ${orderBy?.order ?? 'asc'}` : '';
+      const { fields, filters, orFilters, orderBy, limit, limit_start, groupBy, asDict = true } = args
+      const orderByString = orderBy ? `${String(orderBy?.field)} ${orderBy?.order ?? 'asc'}` : ''
       params = {
         fields: fields ? JSON.stringify(fields) : undefined,
         filters: filters ? JSON.stringify(filters) : undefined,
@@ -74,8 +75,8 @@ export class FrappeDB {
         group_by: groupBy,
         limit,
         limit_start,
-        as_dict: asDict,
-      };
+        as_dict: asDict
+      }
     }
 
     return this.axios
@@ -87,14 +88,15 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: 'There was an error while fetching the documents.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        } as Error
+      })
   }
 
-  /** Creates a new document in the database
+  /**
+   * Creates a new document in the database
    * @param {string} doctype Name of the doctype
-   * @param {Object} value Contents of the document
+   * @param {object} value Contents of the document
    * @returns Promise which resolves with the complete document object
    */
   async createDoc<T = any>(doctype: string, value: T): Promise<FrappeDoc<T>> {
@@ -107,15 +109,16 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: error.response.data.message ?? 'There was an error while creating the document.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        };
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        }
+      })
   }
 
-  /** Updates a document in the database
+  /**
+   * Updates a document in the database
    * @param {string} doctype Name of the doctype
    * @param {string} docname Name of the document
-   * @param {Object} value Contents of the document to update (only the fields that are to be updated)
+   * @param {object} value Contents of the document to update (only the fields that are to be updated)
    * @returns Promise which resolves with the complete document object
    */
   async updateDoc<T = any>(doctype: string, docname: string | null, value: Partial<T>): Promise<FrappeDoc<T>> {
@@ -128,9 +131,9 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: error.response.data.message ?? 'There was an error while updating the document.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        };
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        }
+      })
   }
 
   /**
@@ -149,9 +152,9 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: 'There was an error while deleting the document.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        } as Error
+      })
   }
 
   /**
@@ -164,18 +167,18 @@ export class FrappeDB {
   async getCount<T = any>(
     doctype: string,
     filters?: Filter<T>[],
-    debug: boolean = false,
+    debug: boolean = false
   ): Promise<number> {
     const params: any = {
       doctype,
-      filters: [],
-    };
+      filters: []
+    }
 
     if (debug) {
-      params.debug = debug;
+      params.debug = debug
     }
     if (filters) {
-      params.filters = filters ? JSON.stringify(filters) : undefined;
+      params.filters = filters ? JSON.stringify(filters) : undefined
     }
 
     return this.axios
@@ -187,10 +190,11 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: 'There was an error while getting the count.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        } as Error
+      })
   }
+
   /**
    * Get a document from the database
    * @param {string} doctype Name of the doctype
@@ -201,26 +205,26 @@ export class FrappeDB {
     let queryArgs: GetLastDocArgs<FrappeDoc<T>> = {
       orderBy: {
         field: 'creation',
-        order: 'desc',
-      },
-    };
+        order: 'desc'
+      }
+    }
     if (args) {
       queryArgs = {
         ...queryArgs,
-        ...args,
-      };
+        ...args
+      }
     }
 
     const getDocLists = await this.getDocList<{ name: string }, FrappeDoc<T>>(doctype, {
       ...queryArgs,
       limit: 1,
-      fields: ['name'],
-    });
+      fields: ['name']
+    })
     if (getDocLists.length > 0) {
-      return this.getDoc<T>(doctype, getDocLists[0].name);
+      return this.getDoc<T>(doctype, getDocLists[0].name)
     }
 
-    return {} as FrappeDoc<T>;
+    return {} as FrappeDoc<T>
   }
 
   /**
@@ -235,14 +239,14 @@ export class FrappeDB {
     doctype: string,
     oldname: string | null,
     newname: string | null,
-    merge: boolean = false,
+    merge: boolean = false
   ): Promise<FrappeDoc<T>> {
     return this.axios
       .post('/api/method/frappe.client.rename_doc', {
         doctype,
         old_name: oldname,
         new_name: newname,
-        merge,
+        merge
       })
       .then((res) => res.data)
       .catch((error) => {
@@ -251,9 +255,9 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: error.response.data.message ?? 'There was an error while renaming the document.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        };
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        }
+      })
   }
 
   /**
@@ -272,7 +276,7 @@ export class FrappeDB {
     filters?: Filter<T>[],
     asDict: boolean = true,
     debug: boolean = false,
-    parent: string | null = null,
+    parent: string | null = null
   ): Promise<T> {
     const params: any = {
       doctype,
@@ -280,19 +284,19 @@ export class FrappeDB {
       filters: [],
       as_dict: asDict,
       debug,
-      parent: null,
-    };
+      parent: null
+    }
 
     if (fieldname) {
-      params.fieldname = typeof fieldname === 'object' ? JSON.stringify(fieldname) : fieldname;
+      params.fieldname = typeof fieldname === 'object' ? JSON.stringify(fieldname) : fieldname
     }
 
     if (filters) {
-      params.filters = filters ? JSON.stringify(filters) : undefined;
+      params.filters = filters ? JSON.stringify(filters) : undefined
     }
 
     if (parent) {
-      params.parent = parent;
+      params.parent = parent
     }
 
     return this.axios
@@ -304,9 +308,9 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: 'There was an error while getting the value.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        } as Error
+      })
   }
 
   /**
@@ -321,10 +325,10 @@ export class FrappeDB {
     doctype: string,
     name: string,
     fieldname: string | object,
-    value?: any,
+    value?: any
   ): Promise<FrappeDoc<T>> {
     if (fieldname !== null && typeof fieldname === 'object' && !Array.isArray(fieldname)) {
-      value = undefined;
+      value = undefined
     }
 
     return this.axios
@@ -332,7 +336,7 @@ export class FrappeDB {
         doctype,
         name,
         fieldname,
-        value,
+        value
       })
       .then((res) => res.data)
       .catch((error) => {
@@ -341,9 +345,9 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: 'There was an error while setting the value.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        } as Error
+      })
   }
 
   /**
@@ -355,8 +359,8 @@ export class FrappeDB {
   async getSingleValue<T = any>(doctype: string, field: string): Promise<T> {
     const params: any = {
       doctype,
-      field,
-    };
+      field
+    }
 
     return this.axios
       .get('/api/method/frappe.client.get_single_value', { params })
@@ -367,9 +371,9 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: 'There was an error while getting the value of single doctype.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        } as Error
+      })
   }
 
   /**
@@ -387,9 +391,9 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: 'There was an error while submitting the document.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        } as Error
+      })
   }
 
   /**
@@ -408,8 +412,8 @@ export class FrappeDB {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: 'There was an error while cancelling the document.',
-          exception: error.response.data.exception ?? error.response.data.exc_type ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? error.response.data.exc_type ?? ''
+        } as Error
+      })
   }
 }

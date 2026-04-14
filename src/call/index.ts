@@ -1,55 +1,54 @@
-import { AxiosInstance } from 'axios';
+import { type AxiosInstance } from 'axios'
 
-import { Error } from '../frappe_app/types';
+import { type Error } from '~/app/types'
 
 export class FrappeCall {
   /** URL of the Frappe App instance */
-  private readonly appURL: string;
+  private readonly appURL: string
 
   /** Axios instance */
-  readonly axios: AxiosInstance;
+  readonly axios: AxiosInstance
 
   /** Whether to use the token based auth */
-  readonly useToken: boolean;
+  readonly useToken: boolean
 
   /** Token to be used for authentication */
-  readonly token?: () => string;
+  readonly token?: () => string
 
   /** Type of token to be used for authentication */
-  readonly tokenType?: 'Bearer' | 'token';
+  readonly tokenType?: 'Bearer' | 'token'
 
   constructor(
     appURL: string,
     axios: AxiosInstance,
     useToken?: boolean,
     token?: () => string,
-    tokenType?: 'Bearer' | 'token',
+    tokenType?: 'Bearer' | 'token'
   ) {
-    this.appURL = appURL;
-    this.axios = axios;
-    this.useToken = useToken ?? false;
-    this.token = token;
-    this.tokenType = tokenType;
+    this.appURL = appURL
+    this.axios = axios
+    this.useToken = useToken ?? false
+    this.token = token
+    this.tokenType = tokenType
   }
 
   /** Makes a GET request to the specified endpoint */
   async get<T = any>(path: string, params?: Record<string, any>): Promise<T> {
-
-    const encodedParams = new URLSearchParams();
+    const encodedParams = new URLSearchParams()
     // TEMP Fix Issue #50
     if (params) {
-      Object.entries(params).forEach(param => {
-        const [key, value] = param;
+      Object.entries(params).forEach((param) => {
+        const [key, value] = param
         if (value !== null && value !== undefined) {
-          const val = typeof value === 'object' ? JSON.stringify(value) : value;
-          encodedParams.set(key, val);
+          const val = typeof value === 'object' ? JSON.stringify(value) : value
+          encodedParams.set(key, val)
         }
       })
     }
 
     return this.axios
       .get(`/api/method/${path}`, {
-        params: encodedParams,
+        params: encodedParams
       })
       .then((res) => res.data as T)
       .catch((error) => {
@@ -58,9 +57,9 @@ export class FrappeCall {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: error.response.data.message ?? 'There was an error.',
-          exception: error.response.data.exception ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? ''
+        } as Error
+      })
   }
 
   /** Makes a POST request to the specified endpoint */
@@ -74,9 +73,9 @@ export class FrappeCall {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: error.response.data.message ?? 'There was an error.',
-          exception: error.response.data.exception ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? ''
+        } as Error
+      })
   }
 
   /** Makes a PUT request to the specified endpoint */
@@ -90,9 +89,9 @@ export class FrappeCall {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: error.response.data.message ?? 'There was an error.',
-          exception: error.response.data.exception ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? ''
+        } as Error
+      })
   }
 
   /** Makes a DELETE request to the specified endpoint */
@@ -106,8 +105,8 @@ export class FrappeCall {
           httpStatus: error.response.status,
           httpStatusText: error.response.statusText,
           message: error.response.data.message ?? 'There was an error.',
-          exception: error.response.data.exception ?? '',
-        } as Error;
-      });
+          exception: error.response.data.exception ?? ''
+        } as Error
+      })
   }
 }
