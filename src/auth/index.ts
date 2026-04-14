@@ -4,6 +4,8 @@ import { type Error } from '~/app/types'
 
 import { type AuthCredentials, type AuthResponse, type OTPCredentials, type UserPassCredentials } from './types'
 
+export type * from './types'
+
 export class FrappeAuth {
   /** URL of the Frappe App instance */
   private readonly appURL: string

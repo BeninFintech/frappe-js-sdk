@@ -5,6 +5,8 @@ import { getRequestHeaders } from '~/utils/axios'
 
 import { type FileArgs } from './types'
 
+export type * from './types'
+
 export class FrappeFileUpload {
   /** URL of the Frappe App instance */
   private readonly appURL: string

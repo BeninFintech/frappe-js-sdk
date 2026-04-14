@@ -22,9 +22,9 @@ export type FrappeDoc<T> = T & {
   docstatus: 0 | 1 | 2
   /** The primary key of the DocType table */
   name: string
-  parent?: any
-  parentfield?: any
-  parenttype?: any
+  parent?: string
+  parentfield?: string
+  parenttype?: string
 }
 
 export interface GetLastDocArgs<T = any> {

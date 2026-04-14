@@ -4,6 +4,8 @@ import { type Error } from '~/app/types'
 
 import { type FieldName, type Filter, type FrappeDoc, type GetDocListArgs, type GetLastDocArgs } from './types'
 
+export type * from './types'
+
 export class FrappeDB {
   /** URL of the Frappe App instance */
   private readonly appURL: string

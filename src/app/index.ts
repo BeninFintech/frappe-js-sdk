@@ -8,6 +8,8 @@ import { getAxiosClient } from '~/utils/axios'
 
 import { type TokenParams } from './types'
 
+export type * from './types'
+
 export class FrappeApp {
   /** URL of the Frappe instance */
   readonly url: string

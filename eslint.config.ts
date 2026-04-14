@@ -20,17 +20,20 @@ export default defineConfig(
       overrides: {
         'ts/explicit-function-return-type': 'off',
         'ts/no-import-type-side-effects': ['off'],
-        'perfectionist/sort-imports': ['warn', {
-          type: 'natural',
-          order: 'asc',
-          newlinesBetween: 1,
-          groups: [
-            ['builtin', 'external'],
-            'internal',
-            ['parent', 'sibling', 'index'],
-            'side-effect'
-          ]
-        }]
+        'perfectionist/sort-imports': [
+          'warn',
+          {
+            type: 'natural',
+            order: 'asc',
+            newlinesBetween: 1,
+            groups: [
+              ['builtin', 'external'],
+              'internal',
+              ['parent', 'sibling', 'index'],
+              'side-effect'
+            ]
+          }
+        ]
       }
     },
     rules: {
