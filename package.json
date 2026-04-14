@@ -1,7 +1,7 @@
 {
   "name": "@beninfintech/frappe",
   "type": "module",
-  "version": "1.12.1",
+  "version": "2.0.0",
   "packageManager": "pnpm@10.33.0",
   "description": "TypeScript/JavaScript client for Frappe Framework REST API",
   "author": "Wilfried K. AGO <wilfried.ago@bftgroup.co>",
