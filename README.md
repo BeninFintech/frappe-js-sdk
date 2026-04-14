@@ -6,8 +6,8 @@ TypeScript/JavaScript library for a [Frappe Framework](https://frappeframework.c
 <p align="center">
   <a href="https://github.com/beninfintech/frappe-js-sdk"><img src="https://img.shields.io/maintenance/yes/2026?style=flat-square" alt="Maintenance status" /></a>
   <a href="https://github.com/beninfintech/frappe-js-sdk"><img src="https://img.shields.io/github/license/beninfintech/frappe-js-sdk?style=flat-square" alt="License" /></a>
-  <a href="https://www.npmjs.com/package/frappe-js-sdk"><img src="https://img.shields.io/npm/v/frappe-js-sdk?style=flat-square" alt="npm version" /></a>
-  <a href="https://www.npmjs.com/package/frappe-js-sdk"><img src="https://img.shields.io/npm/dw/frappe-js-sdk?style=flat-square" alt="npm downloads" /></a>
+  <a href="https://www.npmjs.com/package/@beninfintech/frappe"><img src="https://img.shields.io/npm/v/@beninfintech/frappe?style=flat-square" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/@beninfintech/frappe"><img src="https://img.shields.io/npm/dw/@beninfintech/frappe?style=flat-square" alt="npm downloads" /></a>
 </p>
 
 ## Features
