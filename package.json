@@ -20,8 +20,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./dist/index.mjs",
-    "./vite": "./dist/vite/index.mjs",
-    "./package.json": "./package.json"
+    "./vite": "./dist/vite/index.mjs"
   },
   "types": "./dist/index.d.mts",
   "files": [
