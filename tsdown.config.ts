@@ -8,7 +8,6 @@ export default defineConfig({
   ],
   dts: true,
   exports: true,
-  publint: true,
   plugins: [
     ApiSnapshot({
       // TODO: remove this when the library is stable to guard against breaking changes
