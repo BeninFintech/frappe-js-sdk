@@ -1,4 +1,4 @@
-# frappe-js-sdk
+# @beninfintech/frappe
 
 TypeScript/JavaScript library for a [Frappe Framework](https://frappeframework.com) backend.
 
@@ -12,434 +12,354 @@ TypeScript/JavaScript library for a [Frappe Framework](https://frappeframework.c
 
 ## Features
 
-The library currently supports the following features:
-
-- 🔐 Authentication - login with username and password (cookie based) + token based authentication
-- 🗄 Database - Get document, get list of documents, get count, create, update and delete documents
-- 📄 File upload
-- 🤙🏻 API calls
-
-We plan to add the following features in the future:
-
-- Support for common functions like `exists` in the database.
+- REST API client (auth, database CRUD, file upload, RPC calls)
+- Vite plugin suite for Frappe app development (proxy, build config, Jinja boot data, DocType type generation)
+- Full TypeScript support
+- Token-based and cookie-based authentication
 
 The library uses [Axios](https://axios-http.com) under the hood to make API calls to your Frappe backend.
-
-## Maintainers
-
-| Maintainer      | GitHub                                        | Social                                           |
-| --------------- | --------------------------------------------- | ------------------------------------------------ |
-| Wilfried K. AGO | [wilfriedago](https://github.com/wilfriedago) | [@wilfriedago](https://twitter.com/wilfriedago_) |
 
 ## Installation
 
 ```bash
-npm install @beninfintech/frappe
+pnpm add @beninfintech/frappe
 ```
 
-or
+## REST API Client
 
-```bash
-yarn add @beninfintech/frappe
-```
+### Initializing the library
 
-## Initializing the library
-
-To get started, initialize the library:
-
-```js
+```ts
 import { FrappeApp } from '@beninfintech/frappe'
-// Add your Frappe backend's URL
+
 const frappe = new FrappeApp('https://test.frappe.cloud')
 ```
 
-In case you want to use the library with token based authentication (OAuth bearer tokens or API key/secret pairs), you can initialize the library like this:
+With token-based authentication (OAuth bearer tokens or API key/secret pairs):
 
-```js
+```ts
 import { FrappeApp } from '@beninfintech/frappe'
 
 const frappe = new FrappeApp('https://test.frappe.cloud', {
   useToken: true,
-  // Pass a custom function that returns the token as a string - this could be fetched from LocalStorage or auth providers like Firebase, Auth0 etc.
-  token: getTokenFromLocalStorage(),
-  // This can be "Bearer" or "token"
+  token: () => localStorage.getItem('token') ?? '',
   type: 'Bearer'
 })
 ```
 
-## Authentication
+### Authentication
 
-### Initialize the auth library
-
-```js
+```ts
 const auth = frappe.auth()
-```
 
-### Login a user:
-
-This makes an API call to the `/api/method/login` endpoint.
-
-```js
+// Login
 auth
   .loginWithUsernamePassword({ username: 'admin', password: 'my-password' })
   .then((response) => console.log('Logged in'))
   .catch((error) => console.error(error))
-```
 
-### Get currently logged in user:
-
-This makes an API call to the `/api/method/frappe.auth.get_logged_user` endpoint.
-
-```js
+// Get currently logged in user
 auth
   .getLoggedInUser()
   .then((user) => console.log(`User ${user} is logged in.`))
   .catch((error) => console.error(error))
-```
 
-### Logout:
-
-This makes an API call to the `/api/method/logout` endpoint.
-
-```js
+// Logout
 auth
   .logout()
   .then(() => console.log('Logged out.'))
   .catch((error) => console.error(error))
-```
 
-### Forget Password
-
-This makes an API sends a password reset link to the specified email address.
-
-```js
+// Forget password
 auth
   .forgetPassword('example@example.com')
   .then(() => console.log('Password Reset Email Sent!'))
-  .catch(() => console.error('We couldn\'t find your account.'))
+  .catch(() => console.error('Account not found.'))
 ```
 
-## Database
+### Database
 
-### Initialize the database library
-
-```js
+```ts
 const db = frappe.db()
 ```
 
-### Fetch document using document name
+#### Fetch a document
 
-```js
-db.getDoc('DocType', 'My DocType Name')
+```ts
+db.getDoc('ToDo', 'TODO-001')
   .then((doc) => console.log(doc))
   .catch((error) => console.error(error))
 ```
 
-### Fetch list of documents
+#### Fetch a list of documents
 
-```js
-db.getDocList('DocType')
-  .then((docs) => console.log(docs))
-  .catch((error) => console.error(error))
-```
-
-Optionally, a second argument can be provided to filter, sort, limit and paginate results.
-
-```js
-db.getDocList('DocType', {
-  /** Fields to be fetched */
+```ts
+db.getDocList('ToDo', {
   fields: ['name', 'creation'],
-  /** Filters to be applied - SQL AND operation */
   filters: [['creation', '>', '2021-10-09']],
-  /** Filters to be applied - SQL OR operation */
   orFilters: [],
-  /** Fetch from nth document in filtered and sorted list. Used for pagination  */
   limit_start: 5,
-  /** Number of documents to be fetched. Default is 20  */
   limit: 10,
-  /** Sort results by field and order  */
   orderBy: {
     field: 'creation',
-    order: 'desc',
+    order: 'desc'
   },
-  /** Group the results by particular field */
   groupBy: 'name',
-  /** Fetch documents as a dictionary */
-  asDict: false,
+  asDict: false
 })
   .then((docs) => console.log(docs))
   .catch((error) => console.error(error))
 ```
 
-Type declarations are available for the second argument in the source code.
+#### Create, update, delete
 
-### Fetch number of documents with filters
+```ts
+// Create
+db.createDoc('ToDo', { description: 'New task' })
 
-```js
-const filters = [['creation', '>', '2021-10-09']]
-const debug = false /** Default is false - Optional */
+// Update
+db.updateDoc('ToDo', 'TODO-001', { description: 'Updated task' })
 
-db.getCount('DocType', filters, debug)
-  .then((count) => console.log(count))
-  .catch((error) => console.error(error))
+// Delete
+db.deleteDoc('ToDo', 'TODO-001')
+
+// Rename
+db.renameDoc('ToDo', 'Old Name', 'New Name')
 ```
 
-### Create a document
+#### Other operations
 
-To create a new document, pass the name of the DocType and the fields to `createDoc`.
+```ts
+// Get document count with filters
+db.getCount('ToDo', [['status', '=', 'Open']])
 
-```js
-db.createDoc('My Custom DocType', {
-  name: 'Test',
-  test_field: 'This is a test field',
-})
-  .then((doc) => console.log(doc))
-  .catch((error) => console.error(error))
-```
+// Get / set field values
+db.getValue('ToDo', 'description', [['name', '=', 'TODO-001']])
+db.setValue('ToDo', 'TODO-001', 'status', 'Closed')
 
-### Update a document
+// Single doctype value
+db.getSingleValue('Website Settings', 'home_page')
 
-To update an existing document, pass the name of the DocType, name of the document and the fields to be updated to `updateDoc`.
-
-```js
-db.updateDoc('My Custom DocType', 'Test', {
-  test_field: 'This is an updated test field.',
-})
-  .then((doc) => console.log(doc))
-  .catch((error) => console.error(error))
-```
-
-### Delete a document
-
-To create a new document, pass the name of the DocType and the name of the document to be deleted to `deleteDoc`.
-
-```js
-db.deleteDoc('My Custom DocType', 'Test')
-  .then((response) => console.log(response.message)) // Message will be "ok"
-  .catch((error) => console.error(error))
-```
-
-### Rename a document
-
-To rename a document, pass the name of the DocType, old name, new name, and an optional merge flag to `renameDoc`.
-
-```js
-db.renameDoc('My Custom DocType', 'Old Name', 'New Name')
-  .then((response) => console.log(response.message)) // The message will reflect the updated document name.
-  .catch((error) => console.error(error))
-```
-
-### Get field values of a document
-
-To retrieve document values, pass the name of the DocType, field names (string or array), filters, and additional parameters to `getValue`.
-
-```js
-/** Get single field value */
-db.getValue('My Custom DocType', 'Field_Name', [['Filter1', '=', 'Value1'], ['Filter2', '=', 'Value2']])
-  .then((doc) => console.log(doc))
-  .catch((error) => console.error(error))
-
-/** Get multiple field values */
-db.getValue('My Custom DocType', ['Field_Name1', 'Field_Name2'], [['Filter1', '=', 'Value1'], ['Filter2', '=', 'Value2']])
-  .then((doc) => console.log(doc))
-  .catch((error) => console.error(error))
-```
-
-### Set field values of a document
-
-To set field values, pass the name of the DocType, document name, field name (or an object of field-value pairs), and an optional value to `setValue`.
-
-```js
-/** Set value of a single field */
-db.setValue('My Custom DocType', 'Test', 'Field_Name', 'Value')
-  .then((doc) => console.log(doc))
-  .catch((error) => console.error(error))
-
-/** Set values of multiple fields */
-db.setValue('My Custom DocType', 'Test', { Field_Name1: 'Value1', Field_Name2: 'Value2' })
-  .then((doc) => console.log(doc))
-  .catch((error) => console.error(error))
-```
-
-### Get field value from a single doctype
-
-To retrieve a field value from a Single-type doctype, pass the name of the DocType and field name to `getSingleValue`.
-
-```js
-db.getSingleValue('My Custom Single DocType', 'Field_Name')
-  .then((response) => console.log(response.message)) // Message will reflect the value of the field.
-  .catch((error) => console.error(error))
-```
-
-### Submit a document
-
-To submit a document, pass the document object to `submit`.
-
-```js
+// Submit / cancel workflow
 db.submit(doc)
-  .then((doc) => console.log(doc))
-  .catch((error) => console.error(error))
+db.cancel('Sales Invoice', 'INV-001')
 ```
 
-### Cancel a document
-
-To cancel a submitted document, pass the name of the DocType and document name to `cancel`.
-
-```js
-db.cancel('My Custom DocType', 'Test')
-  .then((doc) => console.log(doc))
-  .catch((error) => console.error(error))
-```
-
-## Usage with Typescript
-
-The library supports Typescript out of the box.
-For example, to enforce type on the `updateDoc` method:
-
-```ts
-interface TestDoc {
-  test_field: string
-}
-db.updateDoc<TestDoc>('My Custom DocType', 'Test', {
-  test_field: 'This is an updated test field.',
-})
-```
-
-The library also has an inbuilt type `FrappeDoc` which adds the following fields to your type declarations when you use it with the database methods:
-
-```ts
-export type FrappeDoc<T> = T & {
-  /** User who created the document */
-  owner: string
-  /** Date and time when the document was created - ISO format */
-  creation: string
-  /** Date and time when the document was last modified - ISO format */
-  modified: string
-  /** User who last modified the document */
-  modified_by: string
-  idx: number
-  /** 0 - Saved, 1 - Submitted, 2 - Cancelled */
-  docstatus: 0 | 1 | 2
-  parent?: any
-  parentfield?: any
-  parenttype?: any
-  /** The primary key of the DocType table */
-  name: string
-}
-```
-
-All document responses are returned as an intersection of `FrappeDoc` and the specified type.
-
-## API Calls
-
-### Initialize the call library
+### API Calls
 
 ```ts
 const call = frappe.call()
+
+// GET
+call.get('frappe.desk.search_link', { doctype: 'Currency', txt: 'IN' })
+
+// POST
+call.post('frappe.client.set_value', { doctype: 'User', name: 'Administrator', fieldname: 'interest', value: 'Frappe' })
+
+// PUT
+call.put('frappe.client.set_value', { doctype: 'User', name: 'Administrator', fieldname: 'interest', value: 'Frappe' })
+
+// DELETE
+call.delete('frappe.client.delete', { doctype: 'Tag', name: 'Random Tag' })
 ```
 
-Make sure all endpoints are whitelisted (`@frappe.whitelist()`) in your backend
-
-### GET request
-
-Make a GET request to your endpoint with parameters.
-
-```js
-const searchParams = {
-  doctype: 'Currency',
-  txt: 'IN',
-}
-call
-  .get('frappe.desk.search_link', searchParams)
-  .then((result) => console.log(result))
-  .catch((error) => console.error(error))
-```
-
-### POST request
-
-Make a POST request to your endpoint with parameters.
-
-```js
-const updatedFields = {
-  doctype: 'User',
-  name: 'Administrator',
-  fieldname: 'interest',
-  value: 'Frappe Framework, ERPNext',
-}
-call
-  .post('frappe.client.set_value', updatedFields)
-  .then((result) => console.log(result))
-  .catch((error) => console.error(error))
-```
-
-### PUT request
-
-Make a PUT request to your endpoint with parameters.
-
-```js
-const updatedFields = {
-  doctype: 'User',
-  name: 'Administrator',
-  fieldname: 'interest',
-  value: 'Frappe Framework, ERPNext',
-}
-call
-  .put('frappe.client.set_value', updatedFields)
-  .then((result) => console.log(result))
-  .catch((error) => console.error(error))
-```
-
-### DELETE request
-
-Make a DELETE request to your endpoint with parameters.
-
-```js
-const documentToBeDeleted = {
-  doctype: 'Tag',
-  name: 'Random Tag',
-}
-call
-  .put('frappe.client.delete', documentToBeDeleted)
-  .then((result) => console.log(result))
-  .catch((error) => console.error(error))
-```
-
-## File Uploads
-
-### Initialize the file library
+### File Uploads
 
 ```ts
 const file = frappe.file()
-```
-
-### Upload a file with on progress callback
-
-```js
-const myFile = null // Your File object
-
-const fileArgs = {
-  /* If the file access is private then set to TRUE (optional) */
-  isPrivate: true,
-  /* Folder the file exists in (optional) */
-  folder: 'Home',
-  /* File URL (optional) */
-  file_url: '',
-  /* Doctype associated with the file (optional) */
-  doctype: 'User',
-  /* Docname associated with the file (mandatory if doctype is present) */
-  docname: 'Administrator',
-  /* Field in the document */
-  fieldname: 'image'
-}
 
 file.uploadFile(
   myFile,
-  fileArgs,
-  /* Progress Indicator callback function */
-  (completedBytes, totalBytes) => console.log(Math.round((completedBytes / totalBytes) * 100), ' completed')
+  {
+    isPrivate: true,
+    folder: 'Home',
+    doctype: 'User',
+    docname: 'Administrator',
+    fieldname: 'image'
+  },
+  (completedBytes, totalBytes) => console.log(Math.round((completedBytes / totalBytes) * 100), '% completed')
 )
-  .then(() => console.log('File Upload complete'))
-  .catch((e) => console.error(e))
+```
+
+### TypeScript Support
+
+All methods accept generic type parameters:
+
+```ts
+interface MyDoc {
+  description: string
+  status: 'Open' | 'Closed'
+}
+
+const doc = await db.getDoc<MyDoc>('ToDo', 'TODO-001')
+// doc is FrappeDoc<MyDoc> with full autocomplete
+```
+
+## Vite Plugin
+
+The package includes a Vite plugin suite at `@beninfintech/frappe/vite` for Frappe app frontend development.
+
+### Quick start
+
+Use the unified `frappe()` plugin which composes all sub-plugins:
+
+```ts
+import { frappe } from '@beninfintech/frappe/vite'
+
+export default defineConfig({
+  plugins: [
+    ...frappe({
+      frontendRoute: '/app'
+    })
+  ]
+})
+```
+
+### Options
+
+```ts
+frappe({
+  // Frontend route path. Passed to the build plugin and defined as __FRONTEND_ROUTE__ global.
+  frontendRoute: '/app',
+
+  // Dev proxy plugin. Default: true.
+  // Pass false to disable, or an options object to configure.
+  proxy: true,
+
+  // Jinja boot data injection. Default: true.
+  // Injects Frappe boot data via Jinja templates in production builds.
+  jinja: true,
+
+  // Build config plugin. Default: true.
+  // Auto-detects output directory, base URL, and copies index.html for Frappe routing.
+  build: true,
+
+  // DocType TypeScript type generation. Default: disabled.
+  // Pass options to enable.
+  types: {
+    input: { myapp: ['loan_management', 'savings_management'] }
+  }
+})
+```
+
+### Using plugins individually
+
+Each plugin is also exported separately for fine-grained control:
+
+```ts
+import { buildConfig, frappeProxy, frappeTypes, jinjaBootData } from '@beninfintech/frappe/vite'
+
+export default defineConfig({
+  plugins: [
+    frappeProxy({ port: 8080 }),
+    jinjaBootData(),
+    buildConfig({ frontendRoute: '/app', sourcemap: false }),
+    frappeTypes({ input: { myapp: ['*'] } })
+  ]
+})
+```
+
+### Proxy plugin
+
+Proxies Frappe backend routes (`/api`, `/app`, `/assets`, etc.) to your local Frappe dev server.
+
+```ts
+frappeProxy({
+  // Vite dev server port. Auto-calculated from Frappe's webserver_port if omitted.
+  port: 8080,
+  // Regex pattern for routes to proxy. Default covers all standard Frappe routes.
+  source: '^/(desk|app|login|api|assets|files|private)'
+})
+```
+
+The plugin reads `common_site_config.json` from the bench to determine the backend port, or uses the `FRAPPE_WEB_SERVER_PORT` environment variable.
+
+### Build config plugin
+
+Configures Vite's build output for Frappe app deployment.
+
+```ts
+buildConfig({
+  // Output directory. Auto-detected from Frappe app structure if omitted.
+  outDir: '../myapp/public/frontend',
+  // Path to copy index.html to for Frappe's www/ routing.
+  indexHtmlPath: '../myapp/www/app.html',
+  // Or derive it from the frontend route:
+  frontendRoute: '/app',
+  // Base URL for assets. Auto-detected from outDir if omitted.
+  baseUrl: '/assets/myapp/frontend/',
+  // Sourcemaps. Default: true.
+  sourcemap: true,
+  // Empty output directory before build. Default: true.
+  emptyOutDir: true
+})
+```
+
+### Jinja boot data plugin
+
+Injects Frappe boot data into the HTML during production builds via Jinja templates:
+
+```ts
+jinjaBootData()
+```
+
+This transforms the built `index.html` to include:
+
+```html
+<script>
+  {% for key in boot %}
+  window["{{ key }}"] = {{ boot[key] | tojson }};
+  {% endfor %}
+</script>
+```
+
+### DocType type generation plugin
+
+Scans Frappe DocType JSON schemas from the bench and generates TypeScript declaration files.
+
+```ts
+frappeTypes({
+  // Map of Frappe app name to list of module names.
+  // Use '*' to include all modules from an app.
+  input: {
+    myapp: ['loan_management', 'savings_management'],
+    frappe: ['*']
+  },
+  // Output directory. Default: 'src/types/doctypes'.
+  output: 'src/types/doctypes',
+  // Override bench path. Auto-detected by default.
+  benchPath: '/path/to/bench'
+})
+```
+
+This generates:
+
+```
+src/types/doctypes/
+  _base.d.ts           # DocType, ChildDocType base interfaces
+  loan-management.d.ts  # One file per module
+  index.d.ts           # Re-exports everything
+```
+
+Then in your app code:
+
+```ts
+import { type LoanApplication } from '~/types/doctypes'
+```
+
+### Utility functions
+
+The following Frappe bench utility functions are also exported from `@beninfintech/frappe/vite`:
+
+```ts
+import {
+  findAppName,
+  findAppsFolder,
+  findBenchPath,
+  getCommonSiteConfig,
+  getConfig,
+  getInstalledAppSites
+} from '@beninfintech/frappe/vite'
 ```
 
 ## License
