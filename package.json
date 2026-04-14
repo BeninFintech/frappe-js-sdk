@@ -32,7 +32,6 @@
     "build": "tsdown",
     "test": "vitest",
     "typecheck": "tsc",
-    "prepare": "pnpm run build",
     "preversion": "pnpm run lint",
     "version": "pnpm run format && git add -A src",
     "postversion": "git push && git push --tags",
@@ -40,7 +39,8 @@
     "release": "bumpp",
     "start": "tsx src/index.ts",
     "lint": "eslint",
-    "lint:fix": "eslint --fix"
+    "lint:fix": "eslint --fix",
+    "prepare": "simple-git-hooks"
   },
   "peerDependencies": {
     "vite": ">=5.0.0"
@@ -55,17 +55,27 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.2.0",
+    "@antfu/ni": "^30.0.0",
+    "@antfu/utils": "^9.3.0",
     "@types/node": "^25.6.0",
     "bumpp": "^11.0.1",
     "eslint": "^10.2.0",
     "eslint-plugin-format": "^2.0.1",
     "jiti": "^2.6.1",
+    "lint-staged": "^16.4.0",
     "publint": "^0.3.18",
+    "simple-git-hooks": "^2.13.1",
     "tsdown": "^0.21.8",
     "tsnapi": "^0.1.2",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "vite": "^8.0.8",
     "vitest": "^4.1.4"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm i --frozen-lockfile --ignore-scripts --offline && pnpm run build && npx lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
   }
 }
